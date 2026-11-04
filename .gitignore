@@ -1,0 +1,9 @@
+# 环境变量与密钥
+.env
+
+# Python 缓存
+__pycache__/
+*.pyc
+
+# Streamlit 本地缓存
+.streamlit/

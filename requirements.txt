@@ -1,0 +1,19 @@
+# 核心框架
+langchain>=1.0.3
+langchain-openai>=0.3.0
+# langgraph 与 langgraph-prebuilt 版本必须锁定，高版本存在 ExecutionInfo 兼容性错误
+langgraph==1.0.10
+langgraph-prebuilt==1.0.8
+
+# 数据校验
+pydantic>=2.0
+
+# MCP 工具服务
+mcp>=1.7
+qwen-agent>=0.0.15
+
+# 效果评估
+deepeval>=1.0
+
+# 环境变量管理
+python-dotenv>=1.0
