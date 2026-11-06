@@ -48,6 +48,11 @@ def init_agent_service():
              '你可以帮助用户规划旅游行程，查找地点，导航等。'
              '你应该充分利用高德地图的各种功能来提供专业的建议。')
     # MCP 工具配置
+    # 注意：MCP SDK 的 stdio_client 中，env 一旦提供会完全替换默认环境（不继承父进程），
+    # 因此必须基于 os.environ 拷贝，否则 PATH 等关键变量丢失会导致 npx 行为异常
+    mcp_env = dict(os.environ)
+    # 高德官方 MCP Server 要求的环境变量名为 AMAP_MAPS_API_KEY
+    mcp_env["AMAP_MAPS_API_KEY"] = os.getenv('AMAP_API_KEY', '')
     tools = [{
         "mcpServers": {
             "amap-maps": {
@@ -56,10 +61,7 @@ def init_agent_service():
                     "-y",
                     "@amap/amap-maps-mcp-server"
                 ],
-                "env": {
-                    # 高德官方 MCP Server 要求的环境变量名为 AMAP_MAPS_API_KEY
-                    "AMAP_MAPS_API_KEY": os.getenv('AMAP_API_KEY', '')
-                }
+                "env": mcp_env
             }
         }
     }]

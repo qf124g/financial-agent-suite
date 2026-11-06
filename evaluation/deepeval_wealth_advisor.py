@@ -34,6 +34,7 @@ from dotenv import load_dotenv
 # DeepEval 导入
 from deepeval import evaluate
 from deepeval.test_case import LLMTestCase, LLMTestCaseParams
+from deepeval.models import OpenAIModel
 from deepeval.metrics import (
     AnswerRelevancyMetric,
     HallucinationMetric,
@@ -54,6 +55,23 @@ from hybrid_advisor.hybrid_wealth_advisor_langgraph import (
 
 # 评估器模型（与被测 Agent 共用同一 OpenAI 兼容端点）
 EVAL_MODEL = "qwen3.7-plus"
+
+
+def get_eval_model() -> OpenAIModel:
+    """构造指向 OpenAI 兼容端点的评判模型
+
+    DeepEval 若只传 model 字符串会默认连 OpenAI 官方 api.openai.com，
+    必须显式传入 base_url 与 api_key 指向兼容端点（token-plan），否则 Connection error。
+    """
+    base_url = os.getenv(
+        "OPENAI_BASE_URL",
+        "https://token-plan.cn-beijing.maas.aliyuncs.com/compatible-mode/v1",
+    )
+    return OpenAIModel(
+        model=EVAL_MODEL,
+        api_key=os.getenv("OPENAI_API_KEY"),
+        base_url=base_url,
+    )
 
 
 # ==================== 测试用例定义 ====================
@@ -125,18 +143,19 @@ def create_test_case(
 
 def get_metrics():
     """获取评估指标列表"""
+    eval_model = get_eval_model()
 
     # 1. 答案相关性：评估回答是否与问题相关
     relevancy_metric = AnswerRelevancyMetric(
         threshold=0.6,
-        model=EVAL_MODEL,
+        model=eval_model,
         include_reason=True
     )
 
     # 2. 幻觉检测：检测是否编造虚假信息
     hallucination_metric = HallucinationMetric(
         threshold=0.5,
-        model=EVAL_MODEL,
+        model=eval_model,
         include_reason=True
     )
 
@@ -154,7 +173,7 @@ def get_metrics():
             "判断是否有个性化的考虑"
         ],
         threshold=0.5,
-        model=EVAL_MODEL
+        model=eval_model
     )
 
     return [relevancy_metric, hallucination_metric, risk_consideration_metric]
@@ -224,12 +243,11 @@ def run_evaluation():
     for m in metrics:
         print(f"  - {m.__class__.__name__}")
 
-    # 运行评估
+    # 运行评估（DeepEval 4.x：print_results 移入 display_config，默认即为打印结果）
     print("\n[运行] 正在评估...")
     results = evaluate(
         test_cases=test_cases,
-        metrics=metrics,
-        print_results=True
+        metrics=metrics
     )
 
     print("\n" + "=" * 60)

@@ -48,10 +48,12 @@ def init_agent_service():
              '你可以帮助用户分析文本的基本统计信息。'
              '你应该充分利用文本计数服务的功能来提供专业的分析。')
     # MCP 工具配置（需在本目录下启动，保证 txt_counter.py 相对路径可用）
+    # command 使用当前 Python 解释器绝对路径，避免环境里没有 python 别名导致 Server 启动失败
+    import sys
     tools = [{
         "mcpServers": {
             "txt-counter": {
-                "command": "python",
+                "command": sys.executable,
                 "args": ["txt_counter.py"],
                 "port": 6277
             }

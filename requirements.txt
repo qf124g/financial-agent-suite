@@ -5,12 +5,12 @@ langchain-openai>=0.3.0
 langgraph==1.0.10
 langgraph-prebuilt==1.0.8
 
-# 数据校验
-pydantic>=2.0
+# 数据校验（mcp 依赖新版 pydantic，需 2.14+）
+pydantic>=2.14
 
-# MCP 工具服务
-mcp>=1.7
-qwen-agent>=0.0.15
+# MCP 工具服务（mcp 1.30.0 是同时兼容 pydantic 2.14 与 qwen-agent 1.x API 的版本）
+mcp==1.30.0
+qwen-agent[gui]>=0.0.15
 
 # 效果评估
 deepeval>=1.0
