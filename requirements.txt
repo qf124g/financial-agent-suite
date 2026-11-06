@@ -14,6 +14,7 @@ qwen-agent[gui]>=0.0.15
 
 # 效果评估
 deepeval>=1.0
+langsmith>=0.4
 
 # 环境变量管理
 python-dotenv>=1.0
